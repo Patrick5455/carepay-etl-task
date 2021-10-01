@@ -10,7 +10,6 @@ from carepay_etl.utils.constants import *
 google_app_credential = get_credentialAsJson()
 client: bigquery.Client = bigquery.Client()
 
-
 def get_or_create_default_dataset(dataset_id: str) -> bigquery.Dataset:
     project_dataset = None
     project_id = google_app_credential['project_id']
