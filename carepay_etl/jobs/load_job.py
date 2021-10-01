@@ -87,7 +87,7 @@ def gcp_to_df(sql: str):
 
 if __name__ == '__main__':
     table_names = ["claims", "invoice_items", "invoices", "treatments"]
-    dataset_id = "helloworldabc123"
+    dataset_id = "helloworldabc1234"
     create_bq_tables(table_names,dataset_id)
     csv_tables = [
         CarePayTable(table_id = table_names[0],

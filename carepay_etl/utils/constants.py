@@ -12,3 +12,8 @@ data_challenge_project_name = 'data-challenge'
 care_pay_dataset_id = 'carepay'
 
 carepay_db_tables = ["CLAIM", "INVOICE", "INVOICE_ITEM", "TREATMENT"]
+
+avro_files_dir = "../outputs/avro"
+csv_files_dir = "../outputs/csv"
+parquet_files_dir = "../outputs/parquet"
+
