@@ -1,9 +1,8 @@
 import json
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "hardy-aleph-327710-5f1e524716c0.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../carepay_etl/jobs/hardy-aleph-327710-5f1e524716c0.json"
 google_app_json_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
 
 def get_credentialAsJson() -> dict:
     with open(google_app_json_file, 'r') as json_file:

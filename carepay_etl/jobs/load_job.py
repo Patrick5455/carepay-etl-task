@@ -1,11 +1,8 @@
 from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import bigquery
 
-from carepay_etl.jobs.extract_job import *
-from carepay_etl.jobs.transfrom_job import create_care_pay_tables_for_bq, Transformer
 from carepay_etl.models.bq_csv_config import BQCSVConfig
 from carepay_etl.models.carepay_table import CarePayTable
-from carepay_etl.models.output_format import *
 from carepay_etl.utils.service_account_util import *
 from carepay_etl.utils.constants import *
 
@@ -29,10 +26,6 @@ def create_bq_tables(table_names: list[str], bq_dataset_id: str = care_pay_datas
     project_dataset: bigquery.Dataset = get_or_create_default_dataset(bq_dataset_id)
     for name in table_names:
         try:
-            # todo: function to create table schema
-            # schema = [
-            # bigquery.SchemaField("full_name", "STRING", mode="REQUIRED"),
-            #  bigquery.SchemaField("age", "INTEGER", mode="REQUIRED"),]
             table_ref = project_dataset.table(name)
             table: bigquery.Table = bigquery.Table(table_ref)
             client.create_table(table)
@@ -84,40 +77,3 @@ def gcp_to_df(sql: str):
     query = client.query(sql)
     results = query.result()
     return results.to_dataframe()
-
-
-if __name__ == '__main__':
-    # ["claims", "invoice_items", "invoices", "treatments"]
-
-    carepay_db_connection = connectToMysql()
-    tables_in_carepay = get_table_names(carepay_db_connection)
-    for name in tables_in_carepay:
-        table_df = get_table_df(name, carepay_db_connection)
-        transformer = Transformer(dataframe=table_df, output_format=ParquetOutputFormat(), table_name=name)
-        transformer.transform()
-    carepay_db_connection.close()
-
-    dataset_id = "helloworldabc12345678911"
-    carepay_tables = create_care_pay_tables_for_bq(
-        dataset_id, CsvOutputFormat(), csv_files_dir,
-        create_bq_tables)
-
-    # csv_tables = [
-    #     CarePayTable(table_id=table_names[0],
-    #                  table_data_path="../mysql_docker_build/data/claims.csv",
-    #                  dataset_id=dataset_id),
-    #
-    #     CarePayTable(table_id=table_names[1],
-    #                  table_data_path="../mysql_docker_build/data/invoice_items.csv",
-    #                  dataset_id=dataset_id),
-    #
-    #     CarePayTable(table_id=table_names[2],
-    #                  table_data_path="../mysql_docker_build/data/invoices.csv",
-    #                  dataset_id=dataset_id),
-    #
-    #     CarePayTable(table_id=table_names[3],
-    #                  table_data_path="../mysql_docker_build/data/treatments.csv",
-    #                  dataset_id=dataset_id)
-    # ]
-
-    load_table_files_to_bq(carepay_tables, source_format=bigquery.SourceFormat.CSV)

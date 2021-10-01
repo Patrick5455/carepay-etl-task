@@ -28,12 +28,12 @@ def get_table_df(table_name:str, carepay_db_connection: connection) -> pd.DataFr
     table__df = pd.read_sql(fetch_all_query, carepay_db_connection)
     return table__df
 
-
-if __name__ == '__main__':
-    carepay_db_connection = connectToMysql()
-    tables_in_carepay = get_table_names(carepay_db_connection)
-    for name in tables_in_carepay:
-        print(get_table_df(name, carepay_db_connection))
-    carepay_db_connection.close()
-
-
+#
+# if __name__ == '__main__':
+#     carepay_db_connection = connectToMysql()
+#     tables_in_carepay = get_table_names(carepay_db_connection)
+#     for name in tables_in_carepay:
+#         print(get_table_df(name, carepay_db_connection))
+#     carepay_db_connection.close()
+#
+#
