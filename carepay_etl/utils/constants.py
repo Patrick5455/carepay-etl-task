@@ -17,3 +17,6 @@ avro_files_dir = "../outputs/avro"
 csv_files_dir = "../outputs/csv"
 parquet_files_dir = "../outputs/parquet"
 
+avro_extension = "avro"
+parquet_extension = "parquet.gzip"
+csv_extension = "csv"

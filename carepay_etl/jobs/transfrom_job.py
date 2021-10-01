@@ -2,14 +2,15 @@ import pandas as pd
 
 from carepay_etl.models.output_format import *
 from carepay_etl.utils.constants import *
+import glob
 
 
-class Transform:
+class Transformer:
 
-    def __int__(self, dataframe: pd.DataFrame, output_format: OutputFormat, file_name: str):
+    def __int__(self, dataframe: pd.DataFrame, output_format: OutputFormat, table_name: str):
         self._dataframe = dataframe
         self._output_format = output_format
-        self._file_name = file_name
+        self._file_name = table_name.upper()
 
     def get_dataframe(self):
         return self._dataframe
@@ -36,13 +37,36 @@ class Transform:
     def convert_to_type(self):
         if isinstance(self._output_format, CsvOutputFormat):
             self._get_or_create_output_file_dir(csv_files_dir)
-            self._dataframe.to_csv("{}/{}.csv".format(csv_files_dir, self._file_name))
+            self._dataframe.to_csv("{}/{}.{}".format(csv_files_dir, self._file_name, csv_extension))
 
         if isinstance(self._output_format, ParquetOutputFormat):
             self._get_or_create_output_file_dir(parquet_files_dir)
-            self._dataframe.to_parquet("{}/{}.parquet.gzip".format(parquet_files_dir, self._file_name),
+            self._dataframe.to_parquet("{}/{}.{}".format(parquet_files_dir, self._file_name, parquet_extension),
                                        compression="gzip")
 
         if isinstance(self._output_format, AvroOutputFormat):
             self._get_or_create_output_file_dir(avro_files_dir)
             raise "Avro Format is currently not supported for this version"
+
+
+def create_care_pay_tables_for_bq(table_names: list, dataset_id: str,
+                                  output_format: OutputFormat,
+                                  file_dir: str, create_bq_table_func) -> dict:
+    create_bq_table_func(list(table_names), dataset_id)
+    table_files = dict()
+
+    def create_table_files(file_extension):
+        for file in glob.glob(f"{file_dir}/*.{file_extension}"):
+            table_name = str(file).split("/")[-1].split(".")[0]
+            table_files[table_name] = file
+
+    if isinstance(output_format, ParquetOutputFormat):
+        create_table_files(parquet_extension)
+
+    if isinstance(output_format, AvroOutputFormat):
+        create_table_files(avro_extension)
+
+    if isinstance(output_format, CsvOutputFormat):
+        create_table_files(csv_extension)
+
+    return table_files
