@@ -1,5 +1,6 @@
 import pandas as pd
 
+from carepay_etl.models.carepay_table import CarePayTable
 from carepay_etl.models.output_format import *
 from carepay_etl.utils.constants import *
 import glob
@@ -49,16 +50,18 @@ class Transformer:
             raise "Avro Format is currently not supported for this version"
 
 
-def create_care_pay_tables_for_bq(table_names: list, dataset_id: str,
+def create_care_pay_tables_for_bq(dataset_id: str,
                                   output_format: OutputFormat,
-                                  file_dir: str, create_bq_table_func) -> dict:
-    create_bq_table_func(list(table_names), dataset_id)
+                                  file_dir: str, create_bq_table_func) -> list:
     table_files = dict()
+    table_names =[]
+    care_pay_tables =[]
 
     def create_table_files(file_extension):
         for file in glob.glob(f"{file_dir}/*.{file_extension}"):
             table_name = str(file).split("/")[-1].split(".")[0]
             table_files[table_name] = file
+            table_names.append(table_name)
 
     if isinstance(output_format, ParquetOutputFormat):
         create_table_files(parquet_extension)
@@ -69,4 +72,13 @@ def create_care_pay_tables_for_bq(table_names: list, dataset_id: str,
     if isinstance(output_format, CsvOutputFormat):
         create_table_files(csv_extension)
 
-    return table_files
+    create_bq_table_func(table_names, dataset_id)
+
+    for table_name in table_names:
+        care_pay_tables.append(
+            CarePayTable(table_id=table_name,
+                         table_data_path=table_files[table_name],
+                         dataset_id=dataset_id),
+        )
+
+    return care_pay_tables
