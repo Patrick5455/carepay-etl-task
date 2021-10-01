@@ -7,7 +7,7 @@ from carepay_etl.models.carepay_table import CarePayTable
 from carepay_etl.utils.service_account_util import *
 from carepay_etl.utils.constants import *
 
-google_app_credential = get_credential()
+google_app_credential = get_credentialAsJson()
 client: bigquery.Client = bigquery.Client()
 
 
