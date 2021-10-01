@@ -59,9 +59,9 @@ def create_care_pay_tables_for_bq(dataset_id: str,
 
     def create_table_files(file_extension):
         for file in glob.glob(f"{file_dir}/*.{file_extension}"):
-            table_name = str(file).split("/")[-1].split(".")[0]
-            table_files[table_name] = file
-            table_names.append(table_name)
+            file_table_name = str(file).split("/")[-1].split(".")[0]
+            table_files[file_table_name] = file
+            table_names.append(file_table_name)
 
     if isinstance(output_format, ParquetOutputFormat):
         create_table_files(parquet_extension)
