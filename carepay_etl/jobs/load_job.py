@@ -1,8 +1,11 @@
 from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import bigquery
 
+from carepay_etl.jobs.extract_job import *
+from carepay_etl.jobs.transfrom_job import create_care_pay_tables_for_bq, Transformer
 from carepay_etl.models.bq_csv_config import BQCSVConfig
 from carepay_etl.models.carepay_table import CarePayTable
+from carepay_etl.models.output_format import *
 from carepay_etl.utils.service_account_util import *
 from carepay_etl.utils.constants import *
 
@@ -10,15 +13,15 @@ google_app_credential = get_credentialAsJson()
 client: bigquery.Client = bigquery.Client()
 
 
-def get_or_create_default_dataset(dataset_id: str) -> bigquery.Dataset:
+def get_or_create_default_dataset(bq_dataset_id: str) -> bigquery.Dataset:
     project_dataset = None
     project_id = google_app_credential['project_id']
-    if dataset_id not in client.list_datasets(project_id):
-        print(f"creating new dataset with name {dataset_id}")
-        bq_dataset_id = bigquery.Dataset('{}.{}'.format(project_id, dataset_id))
+    if bq_dataset_id not in client.list_datasets(project_id):
+        print(f"creating new dataset with name {bq_dataset_id}")
+        bq_dataset_id = bigquery.Dataset('{}.{}'.format(project_id, bq_dataset_id))
         project_dataset = client.create_dataset(bq_dataset_id)
     else:
-        print(f"dataset {dataset_id} already exists")
+        print(f"dataset {bq_dataset_id} already exists")
     return project_dataset
 
 
@@ -84,25 +87,37 @@ def gcp_to_df(sql: str):
 
 
 if __name__ == '__main__':
-    table_names = ["claims", "invoice_items", "invoices", "treatments"]
-    dataset_id = "helloworldabc1234"
-    create_bq_tables(table_names, dataset_id)
-    csv_tables = [
-        CarePayTable(table_id=table_names[0],
-                     table_data_path="../mysql_docker_build/data/claims.csv",
-                     dataset_id=dataset_id),
+    # ["claims", "invoice_items", "invoices", "treatments"]
 
-        CarePayTable(table_id=table_names[1],
-                     table_data_path="../mysql_docker_build/data/invoice_items.csv",
-                     dataset_id=dataset_id),
+    carepay_db_connection = connectToMysql()
+    tables_in_carepay = get_table_names(carepay_db_connection)
+    for name in tables_in_carepay:
+        table_df = get_table_df(name, carepay_db_connection)
+        transformer = Transformer(dataframe=table_df, output_format=ParquetOutputFormat(), table_name=name)
+        transformer.transform()
+    carepay_db_connection.close()
 
-        CarePayTable(table_id=table_names[2],
-                     table_data_path="../mysql_docker_build/data/invoices.csv",
-                     dataset_id=dataset_id),
+    dataset_id = "helloworldabc12345678911"
+    carepay_tables = create_care_pay_tables_for_bq(
+        dataset_id, CsvOutputFormat(), csv_files_dir,
+        create_bq_tables)
 
-        CarePayTable(table_id=table_names[3],
-                     table_data_path="../mysql_docker_build/data/treatments.csv",
-                     dataset_id=dataset_id)
-    ]
+    # csv_tables = [
+    #     CarePayTable(table_id=table_names[0],
+    #                  table_data_path="../mysql_docker_build/data/claims.csv",
+    #                  dataset_id=dataset_id),
+    #
+    #     CarePayTable(table_id=table_names[1],
+    #                  table_data_path="../mysql_docker_build/data/invoice_items.csv",
+    #                  dataset_id=dataset_id),
+    #
+    #     CarePayTable(table_id=table_names[2],
+    #                  table_data_path="../mysql_docker_build/data/invoices.csv",
+    #                  dataset_id=dataset_id),
+    #
+    #     CarePayTable(table_id=table_names[3],
+    #                  table_data_path="../mysql_docker_build/data/treatments.csv",
+    #                  dataset_id=dataset_id)
+    # ]
 
-    load_table_files_to_bq(csv_tables, source_format=bigquery.SourceFormat.CSV)
+    load_table_files_to_bq(carepay_tables, source_format=bigquery.SourceFormat.CSV)

@@ -7,8 +7,11 @@ import glob
 
 
 class Transformer:
+    """
 
-    def __int__(self, dataframe: pd.DataFrame, output_format: OutputFormat, table_name: str):
+    """
+
+    def __init__(self, dataframe: pd.DataFrame, output_format: OutputFormat, table_name: str):
         self._dataframe = dataframe
         self._output_format = output_format
         self._file_name = table_name.upper()
@@ -33,7 +36,7 @@ class Transformer:
 
     def _get_or_create_output_file_dir(self, file_path_to_save: str):
         if not os.path.exists(file_path_to_save):
-            os.mkdir(file_path_to_save)
+            os.makedirs(file_path_to_save)
 
     def convert_to_type(self):
         if isinstance(self._output_format, CsvOutputFormat):
@@ -49,13 +52,17 @@ class Transformer:
             self._get_or_create_output_file_dir(avro_files_dir)
             raise "Avro Format is currently not supported for this version"
 
+    def transform(self):
+        self.fill_null_or_na()
+        self.convert_to_type()
+
 
 def create_care_pay_tables_for_bq(dataset_id: str,
                                   output_format: OutputFormat,
                                   file_dir: str, create_bq_table_func) -> list:
     table_files = dict()
-    table_names =[]
-    care_pay_tables =[]
+    table_names = []
+    care_pay_tables = []
 
     def create_table_files(file_extension):
         for file in glob.glob(f"{file_dir}/*.{file_extension}"):
