@@ -10,3 +10,5 @@ DB_PASS = os.getenv("DB_PASS")
 
 data_challenge_project_name = 'data-challenge'
 care_pay_dataset_id = 'carepay'
+
+carepay_db_tables = ["CLAIM", "INVOICE", "INVOICE_ITEM", "TREATMENT"]
