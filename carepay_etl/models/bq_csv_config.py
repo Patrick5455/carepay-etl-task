@@ -12,12 +12,12 @@ class BQCSVConfig:
    """
 
     def __init__(self, client: bigquery.Client, dataset_id: str, table_id: str,
-                 sourceFormat: bigquery.SourceFormat = bigquery.SourceFormat.CSV,
+                 source_format: bigquery.SourceFormat = bigquery.SourceFormat.CSV,
                  job_config_autodetect=True):
         self._dataset_ref = client.dataset(dataset_id)
         self._table_ref = self._dataset_ref.table(table_id)
-        self._job_config = bigquery.LoadJobConfig()
-        self._job_config_source_format = sourceFormat
+        self._job_config = bigquery.LoadJobConfig(autodetect=True, source_format=source_format)
+        self._job_config_source_format = source_format
         self._job_config_autodetect = job_config_autodetect
 
     def get_dataset_ref(self):

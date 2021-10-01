@@ -10,10 +10,10 @@ class CarePayTable:
         dataset_name
     """
 
-    def __init__(self, table_id, table_data_path, dataset_name=care_pay_dataset_id):
+    def __init__(self, table_id, table_data_path, dataset_id=care_pay_dataset_id):
         self._table_name = table_id
         self._table_csv_data_path = table_data_path
-        self._dataset_name = dataset_name
+        self._dataset_name = dataset_id
 
     def __repr__(self):
         print(f'table_name: {self._table_name}\ntable_csv_data_path: {self._table_csv_data_path}'

@@ -53,6 +53,7 @@ def load_csv_table_files_to_bq(carepay_tables: list[CarePayTable]) -> bool:
 
         with open(table.get_table_csv_data_path(), "rb") as source_file:
             try:
+                print(f"loading table into target: {table.get_dataset_name()}:{table.get_table_name()}")
                 job = client.load_table_from_file(source_file, bq_csv_config.get_table_ref(),
                                                   job_config=bq_csv_config.get_job_config())
             except ValueError as ve:
@@ -87,5 +88,27 @@ def gcp_to_df(sql: str):
 
 
 if __name__ == '__main__':
-    tables = ["aaa", "bbb", "cccc"]
-    create_bq_tables(tables, "helloworldxyz")
+    table_names = ["claims", "invoice_items", "invoices", "treatments"]
+    dataset_id = "helloworldabc123"
+    create_bq_tables(table_names,dataset_id)
+    csv_tables = [
+        CarePayTable(table_id = table_names[0],
+                     table_data_path="../mysql_docker_build/data/claims.csv",
+                     dataset_id=dataset_id),
+
+        CarePayTable(table_id=table_names[1],
+                     table_data_path="../mysql_docker_build/data/invoice_items.csv",
+                     dataset_id=dataset_id),
+
+        CarePayTable(table_id=table_names[2],
+                     table_data_path="../mysql_docker_build/data/invoices.csv",
+                     dataset_id=dataset_id),
+
+        CarePayTable(table_id= table_names[3],
+                     table_data_path="../mysql_docker_build/data/treatments.csv",
+                     dataset_id=dataset_id)
+    ]
+
+    load_csv_table_files_to_bq(csv_tables)
+
+
