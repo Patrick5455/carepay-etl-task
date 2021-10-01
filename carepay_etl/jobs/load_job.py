@@ -1,4 +1,3 @@
-import google
 from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import bigquery
 
