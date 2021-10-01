@@ -1,16 +1,18 @@
 from google.cloud import bigquery
 
 
-class BQCSVConfigs:
+class BQCSVConfig:
     """"
     :param
        client
        dataset_id
        table_id
+       sourceFormat
        job_config_autodetect
    """
 
-    def __init__(self, client: bigquery.client, dataset_id: str, table_id: str, sourceFormat: bigquery.SourceFormat=bigquery.SourceFormat.CSV,
+    def __init__(self, client: bigquery.Client, dataset_id: str, table_id: str,
+                 sourceFormat: bigquery.SourceFormat = bigquery.SourceFormat.CSV,
                  job_config_autodetect=True):
         self._dataset_ref = client.dataset(dataset_id)
         self._table_ref = self._dataset_ref.table(table_id)
@@ -21,7 +23,7 @@ class BQCSVConfigs:
     def get_dataset_ref(self):
         return self._dataset_ref
 
-    def set_dataset_ref (self, dataset_ref):
+    def set_dataset_ref(self, dataset_ref):
         self._dataset_ref = dataset_ref
 
     def get_table_ref(self):
@@ -49,6 +51,3 @@ class BQCSVConfigs:
     def set_job_config_autodetect(self, job_config_autodetect):
         self._job_config.autodetect = job_config_autodetect
         self._job_config_autodetect = job_config_autodetect
-
-
-

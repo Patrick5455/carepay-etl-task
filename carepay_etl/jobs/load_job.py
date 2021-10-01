@@ -1,6 +1,9 @@
+import google
+from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import bigquery
 
-from carepay_etl.models.carepay_csv_table import CarePayCsvTable
+from carepay_etl.models.bq_csv_config import BQCSVConfig
+from carepay_etl.models.carepay_table import CarePayTable
 from carepay_etl.utils.service_account_util import *
 from carepay_etl.utils.constants import *
 
@@ -20,7 +23,7 @@ def get_or_create_default_dataset(dataset_id: str) -> bigquery.Dataset:
     return project_dataset
 
 
-def create_bq_tables(table_names: list, bq_dataset_id: str = care_pay_dataset_id):
+def create_bq_tables(table_names: list[str], bq_dataset_id: str = care_pay_dataset_id):
     project_dataset: bigquery.Dataset = get_or_create_default_dataset(bq_dataset_id)
     for name in table_names:
         try:
@@ -39,7 +42,41 @@ def create_bq_tables(table_names: list, bq_dataset_id: str = care_pay_dataset_id
                 e)
 
 
-def load_csv_to_bq(care_pay_csv_tables: list[CarePayCsvTable]) -> bool:
+def load_csv_table_files_to_bq(carepay_tables: list[CarePayTable]) -> bool:
+    tables_count = len(carepay_tables)
+    counter = 0
+    for table in carepay_tables:
+        bq_csv_config = BQCSVConfig(client,
+                                    table.get_dataset_name(),
+                                    table.get_table_name(),
+                                    bigquery.SourceFormat.CSV)
+
+        with open(table.get_table_csv_data_path(), "rb") as source_file:
+            try:
+                job = client.load_table_from_file(source_file, bq_csv_config.get_table_ref(),
+                                                  job_config=bq_csv_config.get_job_config())
+            except ValueError as ve:
+                print(
+                    f"an exception occurred while performing load csv table job to target "
+                    f"{table.get_dataset_name()}:{table.get_table_name()}", ve)
+
+        try:
+            job.result()
+            counter += 1
+            print(
+                "Loaded {} rows into {}:{}.".format
+                (job.output_rows, table.get_dataset_name(), table.get_table_name()))
+        except GoogleAPICallError as ge:
+            print(
+                f"an exception occurred while performing load csv table job to target"
+                f" {table.get_dataset_name()}:{table.get_table_name()}", ge)
+
+    if counter == tables_count:
+        return True
+    return False
+
+
+def load_avro_table_files_to_bq(care_pay_tables: list[CarePayTable]) -> bool:
     return False
 
 

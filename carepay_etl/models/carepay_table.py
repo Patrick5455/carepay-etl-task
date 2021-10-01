@@ -1,18 +1,18 @@
 from carepay_etl.utils.constants import care_pay_dataset_id
 
 
-class CarePayCsvTable:
+class CarePayTable:
 
     """"
      :param
         table_id
-        table_csv_data_path
+        table_data_path supported formats: csv, avro
         dataset_name
     """
 
-    def __init__(self, table_id, table_csv_data_path, dataset_name=care_pay_dataset_id):
+    def __init__(self, table_id, table_data_path, dataset_name=care_pay_dataset_id):
         self._table_name = table_id
-        self._table_csv_data_path = table_csv_data_path
+        self._table_csv_data_path = table_data_path
         self._dataset_name = dataset_name
 
     def __repr__(self):
