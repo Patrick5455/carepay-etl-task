@@ -5,9 +5,11 @@ from carepay_etl.models.output_format import *;
 
 class Transform:
 
-    def __int__(self, dataframe: pd.DataFrame, output_format: OutputFormat):
+    def __int__(self, dataframe: pd.DataFrame, output_format: OutputFormat, path_to_save_file: str, file_name: str):
         self._dataframe = dataframe
         self._output_format = output_format
+        self._path_to_save_file = path_to_save_file
+        self._file_name = file_name
 
     def get_dataframe(self):
         return self._dataframe
