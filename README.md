@@ -5,12 +5,22 @@ This is an ETL task to extract data from a source system, a MySQL database, and 
 In the single source of truth system the data should be cleaned and should be structured in a way that would allow for easy and low-latency queries.
 
 ### How to Run Project - Instructions
+
+> Prerequisites
 - create a service account on google cloud with a bigquery access
 - create a project and generate a key and download the json file. 
 - This json file containing your bigquery credentials should be stored locally in the "carepay_etl/jobs folder"
-- run the docker file found in mysql_docker_build to have a running mysql container
-- run the Dockerfile located at the root of the project 
-- alternatively run the main.py file at the root of [carepay_etl directory]("./carepay_etl'):
+
+> Running Docker files
+- build/run the docker file found in `mysql_docker_build` to have a running mysql container
+- build/run the Dockerfile located at the root of the project
+
+> Running Docker-compose file
+- run docker-compose up at the root of the project where the docker-compose.yaml fileis located
+
+> Run from code
+- Alternatively run the main.py file at the root of [carepay_etl directory]("./carepay_etl'):
+- But make sure  the database container is running [using the Dockerfile found in the `mysql_docker_build` directory](""") 
 
 ### Tooling and  Justification
 - Python: I used python as the language for development because of it allows for quick Proof of Concept 

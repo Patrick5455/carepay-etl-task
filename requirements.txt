@@ -3,6 +3,7 @@ beautifulsoup4==4.10.0
 cachetools==4.2.4
 certifi==2021.5.30
 charset-normalizer==2.0.6
+cramjam==2.4.0
 fastavro==1.4.5
 fastparquet==0.7.1
 fsspec==2021.10.0

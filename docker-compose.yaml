@@ -1,18 +1,17 @@
 # docker compose to run the etl project
-version:  '3.9'
+version:  '3.8'
 services:
   db:
-    build: /carepay_etl/mysql_docker_build
+    build: ./carepay_etl/mysql_docker_build
     ports:
-      - "3306:3306"
+      - "3308:3306"
 
-#  etlapp:
-#    build: ./carepay_etl
-#    ports:
-#      #i do not know this port for the bigquery
-#
-#    depends_on:
-#      - "db"
-#
+  etlapp:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "db"
+
   
 

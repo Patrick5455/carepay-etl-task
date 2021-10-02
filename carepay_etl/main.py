@@ -1,5 +1,3 @@
-from google.cloud import bigquery
-
 from carepay_etl.jobs.extract_job import *
 from carepay_etl.jobs.load_job import *
 from carepay_etl.jobs.transfrom_job import *
