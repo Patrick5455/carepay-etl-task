@@ -12,7 +12,10 @@ In the single source of truth system the data should be cleaned and should be st
 - This json file containing your bigquery credentials should be stored locally in the "carepay_etl/jobs folder"
 
 > Running Docker files
-- build/run the docker file found in `mysql_docker_build` to have a running mysql container
+- build/run the docker file found in `mysql_docker_build` to have a running mysql container using the ffg comand
+>   docker build -t data-challenge . 
+>
+>   docker run -d -v "$PWD/data":/var/lib/data -p 3306:3306 data-challenge
 - build/run the Dockerfile located at the root of the project
 
 > Running Docker-compose file
