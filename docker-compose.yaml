@@ -1,6 +1,4 @@
 # docker compose to run the etl project
-
-
 version:  '3.9'
 services:
   db:
