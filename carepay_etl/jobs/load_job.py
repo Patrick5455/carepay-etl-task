@@ -78,6 +78,7 @@ def load_table_files_to_bq(carepay_tables: list[CarePayTable],
                 f" {table.get_dataset_name()}:{table.get_table_name()}", ge)
 
     if counter == tables_count:
+        print(f"{counter} of {tables_count} tables loaded successfully")
         return True
     return False
 
