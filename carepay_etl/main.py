@@ -1,10 +1,10 @@
 from google.cloud import bigquery
 
-from carepay_etl.jobs.extract_job import connectToMysql, get_table_names, get_table_df
-from carepay_etl.jobs.load_job import create_bq_tables, load_table_files_to_bq
-from carepay_etl.jobs.transfrom_job import Transformer, create_care_pay_tables_for_bq
-from carepay_etl.models.output_format import ParquetOutputFormat, CsvOutputFormat
-from carepay_etl.utils.constants import csv_files_dir, care_pay_dataset_id
+from carepay_etl.jobs.extract_job import *
+from carepay_etl.jobs.load_job import *
+from carepay_etl.jobs.transfrom_job import *
+from carepay_etl.models.output_format import *
+from carepay_etl.utils.constants import *
 
 
 def main():
@@ -15,8 +15,11 @@ def main():
          and then load to the target db
      """
 
+    print("started extract job")
     carepay_db_connection = connectToMysql()
     tables_in_carepay = get_table_names(carepay_db_connection)
+
+    print("started transform job")
     for name in tables_in_carepay:
         table_df = get_table_df(name, carepay_db_connection)
         transformer = Transformer(dataframe=table_df, output_format=ParquetOutputFormat(), table_name=name)
@@ -25,10 +28,10 @@ def main():
 
     dataset_id = care_pay_dataset_id
     carepay_tables = create_care_pay_tables_for_bq(
-        dataset_id, CsvOutputFormat(), csv_files_dir,
-        create_bq_tables)
+        dataset_id, ParquetOutputFormat(), parquet_files_dir)
 
-    load_table_files_to_bq(carepay_tables, source_format=bigquery.SourceFormat.CSV)
+    print("started loading job")
+    load_table_files_to_bq(carepay_tables, source_format=bigquery.SourceFormat.PARQUET)
 
 
 if __name__ == "__main__":

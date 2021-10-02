@@ -1,11 +1,8 @@
 ## CAREPAY DATA CHALLENGE
 
 ### About
-
-
-#### Project Structure
-The project has the ffg directories in the main directory [carepay_etl]("./carepay_etl'): 
-- 
+This is an ETL task to extract data from a source system, a MySQL database, and move it to a single source of truth system. 
+In the single source of truth system the data should be cleaned and should be structured in a way that would allow for easy and low-latency queries.
 
 ### How to Run Project - Instructions
 - create a service account on google cloud with a bigquery access
@@ -16,6 +13,10 @@ The project has the ffg directories in the main directory [carepay_etl]("./carep
 - alternatively run the main.py file at the root of [carepay_etl directory]("./carepay_etl'):
 
 ### Tooling and  Justification
+- Python: I used python as the language for development because of it allows for quick Proof of Concept 
+- Pandas: I used pandas both in the extraction and transformation layer because of its support to interact with various data engineering modules and tools. 
+- BigQuery: I had plans to work with AWS initially but I found BigQuery python setup much faster plus it is alos a columnar data warehouse which fits into my choice of parquet files
+- Docker: It provides easily reproducible environment setup for another user of the codebase
 
 ### Choice of transformation of data_output
 

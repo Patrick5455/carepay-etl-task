@@ -16,7 +16,8 @@ class BQCSVConfig:
                  job_config_autodetect=True):
         self._dataset_ref = client.dataset(dataset_id)
         self._table_ref = self._dataset_ref.table(table_id)
-        self._job_config = bigquery.LoadJobConfig(autodetect=True, source_format=source_format)
+        self._job_config = bigquery.LoadJobConfig(autodetect=True, source_format=source_format,
+                                                  allow_quoted_newlines=True)
         self._job_config_source_format = source_format
         self._job_config_autodetect = job_config_autodetect
 
