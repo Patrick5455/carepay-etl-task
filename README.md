@@ -26,9 +26,3 @@ I decided to use parquet as the choice transformation output file for the ffg re
 - Consumption of less spade given that we want to be efficient with use of resources
 - lastly, given that the end user are mostly analysts, parquet is a better choice compared to avro, 
 - accoring to this [source](https://blog.clairvoyantsoft.com/big-data-file-formats-3fb659903271) PARQUET is much better for analytical querying i.e. reads and querying are much more efficient than writing.
-
-### Currently Known Bug
-- dataset_id already created on a service account throws some errors
-- to avoid this, modify the dataset_id in the constants.py file
-
-
