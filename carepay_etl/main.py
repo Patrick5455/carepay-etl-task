@@ -13,11 +13,11 @@ def main():
          and then load to the target db
      """
 
-    print("started extract job")
+    print("\nstarted extraction job\n")
     carepay_db_connection = connectToMysql()
     tables_in_carepay = get_table_names(carepay_db_connection)
 
-    print("started transform job")
+    print("\nstarted transformation job\n")
     for name in tables_in_carepay:
         table_df = get_table_df(name, carepay_db_connection)
         transformer = Transformer(dataframe=table_df, output_format=ParquetOutputFormat(), table_name=name)
@@ -28,8 +28,10 @@ def main():
     carepay_tables = create_care_pay_tables_for_bq(
         dataset_id, ParquetOutputFormat(), parquet_files_dir)
 
-    print("started loading job")
+    print("\nstarted load job\n")
     load_table_files_to_bq(carepay_tables, source_format=bigquery.SourceFormat.PARQUET)
+
+    print("\n ETL Job completed successfully")
 
 
 if __name__ == "__main__":

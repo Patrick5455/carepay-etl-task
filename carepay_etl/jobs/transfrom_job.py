@@ -8,8 +8,10 @@ from carepay_etl.models.carepay_table import CarePayTable
 from carepay_etl.models.output_format import *
 from carepay_etl.utils.constants import *
 import glob
-from fastparquet import write
+from pandas.api.types import is_datetime64_dtype, is_datetime64tz_dtype, is_datetime64_ns_dtype, is_datetime64_any_dtype
+from datetime import datetime
 import pandavro as pdx
+
 
 class Transformer:
     """
@@ -35,9 +37,14 @@ class Transformer:
 
     def fill_null_or_na(self):
         for col in self._dataframe.columns:
-            if self._dataframe[col].isnull or self._dataframe[col].isna:
-                print(f"fixing null values in column {col}")
-                self._dataframe[col].fillna(self._dataframe[col].mode(), inplace=True)
+            if self._dataframe[col].isnull().values.any():
+                print(f"fixing null values in column {col} of table {self._file_name}")
+                if self._dataframe[col].isnull().all():
+                    print(f"All values in column {col} of table{self._file_name} are null -> imputing default values")
+                    self._dataframe[col].fillna("NO_"+col, inplace=True)
+                else:
+                    self._dataframe[col].fillna(self._dataframe[col].mode(dropna=True)[0], inplace=True)
+                print(f"fixed null values in column {col} of table {self._file_name}")
 
     def _get_or_create_output_file_dir(self, file_path_to_save: str):
         if not os.path.exists(file_path_to_save):
